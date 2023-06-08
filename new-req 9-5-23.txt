@@ -1,0 +1,8 @@
+albumentations==1.1.0
+flask==2.2.2
+importlib-metadata==5.1.0
+pip-chill==1.0.3
+sentencepiece==0.1.97
+torch==1.13.0
+transformers==4.24.0
+wincertstore==0.2

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='public/vite.svg') }}"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ai Lang Translator</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='utils.css') }} "
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+  </head>
+
+  <body id="index">
+    <header class="header">
+      <div class="container">
+        <a href="{{ url_for('index') }}" class="logo"
+          ><span class="">AI Translator</span></a
+        >
+      </div>
+    </header>
+
+    <main>
+      <div class="container padding-block-700">
+        <form id="translateform" class="translateForm grid">
+          <div class="selectionPart row grid three-column">
+            <div class="inputSelectionBox">
+              <select
+                class="select gradient-box"
+                name="inputLang"
+                id="inputLang"
+                required
+              >
+                <option value="en" selected>English</option>
+              </select>
+            </div>
+            <div class="shuffleBox order-1">
+              <button class="gradient-box suffleBtn noHover" disabled>
+                <span class="material-symbols-outlined"> shuffle </span>
+              </button>
+            </div>
+
+            <div class="outputSelectionBox">
+              <select
+                class="select gradient-box"
+                name="outputLang"
+                id="outputLang"
+                required
+              >
+                <option selected value="" disabled>Select Language</option>
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="fr">Franch</option>
+                <option value="es">Spanish</option>
+                <option value="de">Germany</option>
+                <option value="ru">Russia</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="textareaPart row grid three-column">
+            <div class="textareaBox gradient-box">
+              <textarea
+                class=""
+                name="inputText"
+                id="inputText"
+                cols="30"
+                rows="8"
+                placeholder="Enter the text"
+              ></textarea>
+            </div>
+            <span></span>
+            <div class="textareaBox gradient-box">
+              <div class="loader">
+                <div class="lds-ellipsis">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
+              <textarea
+                name="outputText"
+                id="outputText"
+                cols="30"
+                rows="8"
+              ></textarea>
+            </div>
+          </div>
+          <div class="row grid grid-place-center">
+            <button type="submit" class="btn" id="translatebtn">
+              Translate
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.js"
+      integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const loader = document.querySelector(".loader");
+      const displayLoader = () => {
+        loader.style.display = "grid";
+      };
+      const hideLoader = () => {
+        loader.style.display = "none";
+      };
+
+      $(document).ready(function () {
+        $("#translatebtn").on("click", function (e) {
+          e.preventDefault();
+          displayLoader();
+          var form = $("#translateform")[0];
+          var data = new FormData(form);
+
+          $.ajax({
+            type: "POST",
+            url: "{{ url_for('translateText') }}",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 800000,
+            success: function (data) {
+              hideLoader();
+              $("#outputText").val("");
+
+              arr = JSON.parse(data);
+
+              if ("error" in arr) {
+                console.log(arr["error"]);
+              } else {
+                $("#outputText").val(arr["translated_text"]);
+              }
+            },
+            error: function (e) {
+              console.log("ERROR : ", e);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
